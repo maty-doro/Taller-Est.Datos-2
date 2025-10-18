@@ -7,6 +7,6 @@ struct nodo{
 
     nodo* nxtFil;
     nodo* nxtCol;
-    nodo(int valor);
+    nodo(int valor, int fila, int columna);
     ~nodo ();
 };
