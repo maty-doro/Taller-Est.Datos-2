@@ -2,7 +2,11 @@
 
 struct nodo{
     int value;
-    nodo* nxt;
+    int fil;
+    int col;
+
+    nodo* nxtFil;
+    nodo* nxtCol;
     nodo(int valor);
     ~nodo ();
 };
