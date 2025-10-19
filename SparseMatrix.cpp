@@ -64,10 +64,44 @@ void SparseMatrix::add(int value, int yPos, int xPos) {
 
 
 int SparseMatrix::get(int xPos, int yPos) {
+    nodo* filaActual = head->nxtFil;
+    if (filaActual == nullptr) {
+        std::cout << "La matriz esta vacia." << std::endl;
+        return 0;
+    }
+    while (filaActual != nullptr) {
+        nodo* nodoActual = filaActual->nxtCol;
+        
+        while (nodoActual != nullptr) {
+            if(nodoActual->fil==xPos && nodoActual->col==yPos){
+                return nodoActual->value;
+            }
+            nodoActual = nodoActual->nxtCol;
+        }
+        filaActual = filaActual->nxtFil;
+    }
     return 0;
 }
 
 void SparseMatrix::remove(int xPos, int yPos) {
+    nodo* filaActual = head->nxtFil;
+    if (filaActual == nullptr) {
+        std::cout << "La matriz esta vacia." << std::endl;
+        return;
+    }
+
+    while (filaActual != nullptr) {
+        nodo* nodoActual = filaActual->nxtCol;
+
+        while (nodoActual != nullptr) {
+            if(nodoActual->fil==xPos && nodoActual->col==yPos){
+                nodoActual->value = 0;
+                std::cout<<"Nodo Reseteado a 0"<<std::endl;
+            }
+            nodoActual = nodoActual->nxtCol;
+        }
+        filaActual = filaActual->nxtFil;
+    }    
 }
 
 void SparseMatrix::printStoredValues() {
