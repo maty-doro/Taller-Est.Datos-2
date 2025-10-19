@@ -2,7 +2,7 @@
 #include <iostream>
 
 SparseMatrix::SparseMatrix() {
-    // El constructor crea nuestro nodo de inicio.
+    // El constructor crea nuestro nodo de inicio
     head = new nodo(-1, -1, -1);
 }
 
@@ -10,8 +10,8 @@ SparseMatrix::~SparseMatrix() {
 
 }
 
-void SparseMatrix::add(int value, int xPos, int yPos) {
-    // Primero, buscamos la posición correcta en la fila.
+void SparseMatrix::add(int value, int yPos, int xPos) {
+    // Primero, buscamos la posición correcta en la fila
     nodo* vertical = head;
     while (vertical->nxtFil != nullptr && vertical->nxtFil->fil < yPos) {
         vertical = vertical->nxtFil;
@@ -25,24 +25,24 @@ void SparseMatrix::add(int value, int xPos, int yPos) {
     }
     nodo* filaActual = vertical->nxtFil;
 
-    // Avanzamos por la fila para encontrar la columna.
+    // Avanzamos por la fila para encontrar la columna
     nodo* horizontal = filaActual;
     while (horizontal->nxtCol != nullptr && horizontal->nxtCol->col < xPos) {
         horizontal = horizontal->nxtCol;
     }
     
-    // Si ya existe un nodo aqui, solo cambiamos el valor y terminamos.
+    // Si ya existe un nodo aqui, solo cambiamos el valor y terminamos
     if (horizontal->nxtCol != nullptr && horizontal->nxtCol->col == xPos) {
         horizontal->nxtCol->value = value;
         return;
     }
 
-    // Si no existe, lo creamos y lo enlazamos en la fila.
+    // Si no existe, lo creamos y lo enlazamos en la fila
     nodo* nuevoNodo = new nodo(value, yPos, xPos);
     nuevoNodo->nxtCol = horizontal->nxtCol;
     horizontal->nxtCol = nuevoNodo;
 
-    // Ahora hacemos lo mismo para enlazarlo en la columna.
+    // Ahora hacemos lo mismo para enlazarlo en la columna
     vertical = head;
     while (vertical->nxtCol != nullptr && vertical->nxtCol->col < xPos) {
         vertical = vertical->nxtCol;
@@ -71,6 +71,26 @@ void SparseMatrix::remove(int xPos, int yPos) {
 }
 
 void SparseMatrix::printStoredValues() {
+    std::cout << "--- Contenido de la Matriz ---" << std::endl;
+    nodo* filaActual = head->nxtFil; // Empezamos en la primera fila real.
+
+    if (filaActual == nullptr) {
+        std::cout << "La matriz esta vacia." << std::endl;
+        return;
+    }
+
+    // Recorremos cada fila
+    while (filaActual != nullptr) {
+        nodo* nodoActual = filaActual->nxtCol; // Empezamos en el primer nodo con valor de la fila.
+
+        // Recorremos cada nodo en la fila actual
+        while (nodoActual != nullptr) {
+            std::cout << "(" << nodoActual->fil << ", " << nodoActual->col << ") --> " << nodoActual->value << std::endl;
+            nodoActual = nodoActual->nxtCol;
+        }
+        filaActual = filaActual->nxtFil;
+    }
+    std::cout << "-----------------------------" << std::endl;
 }
 
 int SparseMatrix::density() {
