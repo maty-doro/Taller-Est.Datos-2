@@ -3,7 +3,7 @@
 
 class SparseMatrix {
 private:
-    nodo* start;
+    nodo* head; // Nodo cabecera que simplifica las inserciones.
 
 public:
     SparseMatrix();
