@@ -149,7 +149,7 @@ int SparseMatrix::density() {
     double elementCount = 0;
     nodo* filaActual = head->nxtFil;
 
-    // Contamos todos los nodos con valores
+    // Contar elementos no nulos
     while (filaActual != nullptr) {
         nodo* nodoActual = filaActual->nxtCol;
         while (nodoActual != nullptr) {
@@ -163,27 +163,14 @@ int SparseMatrix::density() {
         return 0;
     }
 
-    // Encontramos la fila y columna más lejanas
-    int maxRow = 0;
-    nodo* tempFila = head;
-    while (tempFila->nxtFil != nullptr) {
-        tempFila = tempFila->nxtFil;
+    // Calcular tamaño total usando las variables miembro
+    double totalSize = (double)(filas + 1) * (columnas + 1);
+
+    if (totalSize == 0) {
+        return 0;
     }
-    maxRow = tempFila->fil;
 
-    int maxCol = 0;
-    nodo* tempCol = head;
-    while (tempCol->nxtCol != nullptr) {
-        tempCol = tempCol->nxtCol;
-    }
-    maxCol = tempCol->col;
-
-    // El tamaño total considera que los índices empiezan en 0
-    double totalSize = (double)(maxRow + 1) * (maxCol + 1);
-
-    if (totalSize == 0) return 0;
-
-    // Devolvemos la densidad como un porcentaje entero
+    // Retornar densidad como porcentaje
     return (int)((elementCount / totalSize) * 100);
 }
 
