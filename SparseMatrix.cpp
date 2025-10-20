@@ -1,9 +1,12 @@
 #include "SparseMatrix.h"
 #include <iostream>
+#include <ostream>
 
 SparseMatrix::SparseMatrix() {
     // El constructor crea nuestro nodo de inicio
     head = new nodo(-1, -1, -1);
+    columnas = 0;
+    filas = 0;
 }
 
 SparseMatrix::~SparseMatrix() {
@@ -34,6 +37,12 @@ void SparseMatrix::add(int value, int yPos, int xPos) {
     // Si ya existe un nodo aqui, solo cambiamos el valor y terminamos
     if (horizontal->nxtCol != nullptr && horizontal->nxtCol->col == xPos) {
         horizontal->nxtCol->value = value;
+        if (xPos > columnas) {
+        columnas = xPos;
+        }
+        if (yPos > filas) {
+        filas = yPos;
+        }
         return;
     }
 
@@ -60,6 +69,13 @@ void SparseMatrix::add(int value, int yPos, int xPos) {
     }
     nuevoNodo->nxtFil = columnaActual->nxtFil;
     columnaActual->nxtFil = nuevoNodo;
+    
+    if (xPos > columnas) {
+        columnas = xPos;
+    }
+    if (yPos > filas) {
+        filas = yPos;
+    }
 }
 
 
@@ -70,8 +86,9 @@ int SparseMatrix::get(int xPos, int yPos) {
         return 0;
     }
     while (filaActual != nullptr) {
-        nodo* nodoActual = filaActual->nxtCol;
-        
+        nodo* nodoActual = filaActual->nxtCol; // Empezamos en el primer nodo con valor de la fila.
+
+        // Recorremos cada nodo en la fila actual
         while (nodoActual != nullptr) {
             if(nodoActual->fil==xPos && nodoActual->col==yPos){
                 return nodoActual->value;
@@ -101,12 +118,13 @@ void SparseMatrix::remove(int xPos, int yPos) {
             nodoActual = nodoActual->nxtCol;
         }
         filaActual = filaActual->nxtFil;
-    }    
+    }
+
 }
 
 void SparseMatrix::printStoredValues() {
     std::cout << "--- Contenido de la Matriz ---" << std::endl;
-    nodo* filaActual = head->nxtFil; // Empezamos en la primera fila real.
+    nodo* filaActual = head->nxtFil;
 
     if (filaActual == nullptr) {
         std::cout << "La matriz esta vacia." << std::endl;
@@ -127,10 +145,24 @@ void SparseMatrix::printStoredValues() {
     std::cout << "-----------------------------" << std::endl;
 }
 
+
 int SparseMatrix::density() {
     return 0;
 }
 
 SparseMatrix* SparseMatrix::multiply(SparseMatrix* second) {
+    if (getColumnas() != second->getFilas()){
+        std::cout<<"No hay posibilidad de multiplicar las matrices"<<std::endl;
+        return nullptr;
+    }
+    std::cout<<"doro";
     return nullptr;
+    //SparseMatrix* MxNueva = new SparseMatrix();
+    
+}
+int SparseMatrix::getColumnas(){
+    return columnas;
+}
+int SparseMatrix::getFilas(){
+    return filas;
 }
