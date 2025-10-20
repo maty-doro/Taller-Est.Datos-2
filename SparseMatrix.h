@@ -10,8 +10,8 @@ private:
 public:
     SparseMatrix();
     void add(int value, int yPos, int xPos);
-    int get(int xPos, int yPos);
-    void remove(int xPos, int yPos);
+    int get(int yPos, int xPos);
+    void remove(int yPos, int xPos);
     void printStoredValues();
     int density();
     SparseMatrix* multiply(SparseMatrix* second);

@@ -79,7 +79,7 @@ void SparseMatrix::add(int value, int yPos, int xPos) {
 }
 
 
-int SparseMatrix::get(int xPos, int yPos) {
+int SparseMatrix::get(int yPos, int xPos) {
     nodo* filaActual = head->nxtFil;
     if (filaActual == nullptr) {
         std::cout << "La matriz esta vacia." << std::endl;
@@ -90,7 +90,7 @@ int SparseMatrix::get(int xPos, int yPos) {
 
         // Recorremos cada nodo en la fila actual
         while (nodoActual != nullptr) {
-            if(nodoActual->fil==xPos && nodoActual->col==yPos){
+            if (nodoActual->fil == yPos && nodoActual->col == xPos) {
                 return nodoActual->value;
             }
             nodoActual = nodoActual->nxtCol;
@@ -100,7 +100,7 @@ int SparseMatrix::get(int xPos, int yPos) {
     return 0;
 }
 
-void SparseMatrix::remove(int xPos, int yPos) {
+void SparseMatrix::remove(int yPos, int xPos) {
     nodo* filaActual = head->nxtFil;
     if (filaActual == nullptr) {
         std::cout << "La matriz esta vacia." << std::endl;
@@ -111,7 +111,7 @@ void SparseMatrix::remove(int xPos, int yPos) {
         nodo* nodoActual = filaActual->nxtCol;
 
         while (nodoActual != nullptr) {
-            if(nodoActual->fil==xPos && nodoActual->col==yPos){
+            if (nodoActual->fil == yPos && nodoActual->col == xPos) {
                 nodoActual->value = 0;
                 std::cout<<"Nodo Reseteado a 0"<<std::endl;
             }
