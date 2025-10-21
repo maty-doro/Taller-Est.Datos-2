@@ -150,44 +150,43 @@ int SparseMatrix::density() {
 }
 
 SparseMatrix* SparseMatrix::multiply(SparseMatrix* second) {
-if (getColumnas() != second->getFilas()) {
-std::cout<<"No hay posibilidad de multiplicar las matrices"<<std::endl;
-return nullptr;
-}
-SparseMatrix* MxNueva = new SparseMatrix();
-nodo* filaA = head->nxtFil;
-
-    if(filaA==nullptr) {
-    std::cout << "Matriz está vacia" << std::endl;
+    if (getColumnas() != second->getFilas()) {
+    std::cout<<"No hay posibilidad de multiplicar las matrices"<<std::endl;
+    return nullptr;
     }
-    //Recorre fila m1
-while (filaA != nullptr) {
-   nodo* colM2 = second->head->nxtCol;
-   //Columnas m2
-   while(colM2 != nullptr){
-       int suma = 0;
-       nodo* nodoActual = filaA->nxtCol;
-       //Recorre elementos de la fila m1
-       while (nodoActual!=nullptr){
-           nodo* colActual = colM2->nxtFil;
-           //Encuentra la fila de nodoActual
-           while(colActual!= nullptr && colActual->fil<nodoActual->col){
-               colActual = colActual->nxtFil;
+    SparseMatrix* MxNueva = new SparseMatrix();
+    nodo* filaA = head->nxtFil;
+    
+        if(filaA==nullptr) {
+        std::cout << "Matriz está vacia" << std::endl;
+        }
+        //Recorre fila m1
+    while (filaA != nullptr) {
+       nodo* colM2 = second->head->nxtCol;
+       //Columnas m2
+       while(colM2 != nullptr){
+           int suma = 0;
+           nodo* nodoActual = filaA->nxtCol;
+           //Recorre elementos de la fila m1
+           while (nodoActual!=nullptr){
+               nodo* colActual = colM2->nxtFil;
+               //Encuentra la fila de nodoActual
+               while(colActual!= nullptr && colActual->fil<nodoActual->col){
+                   colActual = colActual->nxtFil;
+               }
+               if(colActual!= nullptr && colActual->fil == nodoActual->col){
+                   suma += colActual->value*nodoActual->value;
+               }
+               if (suma > 0){
+                MxNueva->add(suma,filaA->fil,colM2->col);
+               }
+               nodoActual = nodoActual->nxtCol;
            }
-           if(colActual!= nullptr && colActual->fil == nodoActual->col){
-               suma += colActual->value*nodoActual->value;
-           }
-           if (suma > 0){
-            MxNueva->add(suma,filaA->fil,colM2->col);
-           }
-           nodoActual = nodoActual->nxtCol;
+           colM2 = colM2->nxtCol;
        }
-       colM2 = colM2->nxtCol;
-   }
-   filaA = filaA->nxtFil;
-}
-return MxNueva;
-
+       filaA = filaA->nxtFil;
+    }
+    return MxNueva;
 }
 int SparseMatrix::getColumnas(){
     return columnas;
