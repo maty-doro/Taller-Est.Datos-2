@@ -123,14 +123,13 @@ void SparseMatrix::remove(int xPos, int yPos) {
 }
 
 void SparseMatrix::printStoredValues() {
-    std::cout << "--- Contenido de la Matriz ---" << std::endl;
     nodo* filaActual = head->nxtFil;
 
     if (filaActual == nullptr) {
         std::cout << "La matriz esta vacia." << std::endl;
         return;
     }
-
+    std::cout << "--- Contenido de la Matriz ---" << std::endl;
     // Recorremos cada fila
     while (filaActual != nullptr) {
         nodo* nodoActual = filaActual->nxtCol; // Empezamos en el primer nodo con valor de la fila.
