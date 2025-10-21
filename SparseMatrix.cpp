@@ -145,6 +145,7 @@ void SparseMatrix::printStoredValues() {
     std::cout << "-----------------------------" << std::endl;
 }
 
+
 int SparseMatrix::density() {
     double elementCount = 0;
     nodo* filaActual = head->nxtFil;
