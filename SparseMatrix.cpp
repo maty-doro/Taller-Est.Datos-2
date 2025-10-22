@@ -37,11 +37,11 @@ void SparseMatrix::add(int value, int yPos, int xPos) {
     // Si ya existe un nodo aqui, solo cambiamos el valor y terminamos
     if (horizontal->nxtCol != nullptr && horizontal->nxtCol->col == xPos) {
         horizontal->nxtCol->value = value;
-        if (xPos > columnas) {
-        columnas = xPos;
+        if (xPos+1 > columnas) {
+        columnas = xPos+1;
         }
-        if (yPos > filas) {
-        filas = yPos;
+        if (yPos+1 > filas) {
+        filas = yPos+1;
         }
         return;
     }
@@ -70,11 +70,11 @@ void SparseMatrix::add(int value, int yPos, int xPos) {
     nuevoNodo->nxtFil = columnaActual->nxtFil;
     columnaActual->nxtFil = nuevoNodo;
     
-    if (xPos > columnas) {
-        columnas = xPos;
+    if (xPos+1 > columnas) {
+        columnas = xPos+1;
     }
-    if (yPos > filas) {
-        filas = yPos;
+    if (yPos+1 > filas) {
+        filas = yPos+1;
     }
 }
 
@@ -123,6 +123,7 @@ void SparseMatrix::remove(int xPos, int yPos) {
 }
 
 void SparseMatrix::printStoredValues() {
+    
     nodo* filaActual = head->nxtFil;
 
     if (filaActual == nullptr) {
@@ -151,16 +152,17 @@ int SparseMatrix::density() {
 
 SparseMatrix* SparseMatrix::multiply(SparseMatrix* second) {
     if (getColumnas() != second->getFilas()) {
-    std::cout<<"No hay posibilidad de multiplicar las matrices"<<std::endl;
-    return nullptr;
+        std::cout<<"No hay posibilidad de multiplicar las matrices"<<std::endl;
+        return nullptr;
     }
     SparseMatrix* MxNueva = new SparseMatrix();
     nodo* filaA = head->nxtFil;
     
-        if(filaA==nullptr) {
+    if(filaA==nullptr) {
         std::cout << "Matriz está vacia" << std::endl;
-        }
-        //Recorre fila m1
+        return nullptr;
+    }
+    //Recorre fila m1
     while (filaA != nullptr) {
        nodo* colM2 = second->head->nxtCol;
        //Columnas m2
@@ -177,13 +179,14 @@ SparseMatrix* SparseMatrix::multiply(SparseMatrix* second) {
                if(colActual!= nullptr && colActual->fil == nodoActual->col){
                    suma += colActual->value*nodoActual->value;
                }
-               if (suma > 0){
-                MxNueva->add(suma,filaA->fil,colM2->col);
-               }
                nodoActual = nodoActual->nxtCol;
-           }
+            }
+            if (suma > 0){
+                MxNueva->add(suma,filaA->fil,colM2->col);
+            }
            colM2 = colM2->nxtCol;
        }
+       
        filaA = filaA->nxtFil;
     }
     return MxNueva;
