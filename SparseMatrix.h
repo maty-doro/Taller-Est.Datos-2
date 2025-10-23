@@ -6,6 +6,7 @@ private:
     nodo* head; 
     int columnas; 
     int filas;
+    int elementCount;
 
 public:
     SparseMatrix();

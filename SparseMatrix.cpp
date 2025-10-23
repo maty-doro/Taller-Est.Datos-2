@@ -7,10 +7,36 @@ SparseMatrix::SparseMatrix() {
     head = new nodo(-1, -1, -1);
     columnas = 0;
     filas = 0;
+    elementCount = 0;
 }
 
 SparseMatrix::~SparseMatrix() {
+    nodo* filaActual = head->nxtFil;
 
+    // Recorre cada fila
+    while (filaActual != nullptr) {
+        nodo* nodoActual = filaActual->nxtCol;
+        
+        // Borra todos los nodos de datos en la fila actual
+        while (nodoActual != nullptr) {
+            nodo* nodoABorrar = nodoActual;
+            nodoActual = nodoActual->nxtCol;
+            delete nodoABorrar;
+        }
+
+        nodo* filaABorrar = filaActual;
+        filaActual = filaActual->nxtFil;
+        delete filaABorrar;
+    }
+
+    // Borra las cabeceras de las columnas
+    nodo* colActual = head->nxtCol;
+    while (colActual != nullptr) {
+        nodo* colABorrar = colActual;
+        colActual = colActual->nxtCol;
+        delete colABorrar;
+    }
+    delete head;
 }
 
 void SparseMatrix::add(int value, int yPos, int xPos) {
@@ -50,6 +76,7 @@ void SparseMatrix::add(int value, int yPos, int xPos) {
     nodo* nuevoNodo = new nodo(value, yPos, xPos);
     nuevoNodo->nxtCol = horizontal->nxtCol;
     horizontal->nxtCol = nuevoNodo;
+    elementCount++;
 
     // Ahora hacemos lo mismo para enlazarlo en la columna
     vertical = head;
@@ -80,46 +107,68 @@ void SparseMatrix::add(int value, int yPos, int xPos) {
 
 
 int SparseMatrix::get(int yPos, int xPos) {
-    nodo* filaActual = head->nxtFil;
-    if (filaActual == nullptr) {
-        std::cout << "La matriz esta vacia." << std::endl;
+    nodo* vertical = head->nxtFil;
+
+    // Busca la cabecera de la fila 'yPos'
+    while (vertical != nullptr && vertical->fil < yPos) {
+        vertical = vertical->nxtFil;
+    }
+    if (vertical == nullptr || vertical->fil != yPos) {
         return 0;
     }
-    while (filaActual != nullptr) {
-        nodo* nodoActual = filaActual->nxtCol; // Empezamos en el primer nodo con valor de la fila.
-
-        // Recorremos cada nodo en la fila actual
-        while (nodoActual != nullptr) {
-            if (nodoActual->fil == yPos && nodoActual->col == xPos) {
-                return nodoActual->value;
-            }
-            nodoActual = nodoActual->nxtCol;
-        }
-        filaActual = filaActual->nxtFil;
+    // Ahora busca el nodo 'xPos' solo en esa fila
+    nodo* horizontal = vertical->nxtCol;
+    while (horizontal != nullptr && horizontal->col < xPos) {
+        horizontal = horizontal->nxtCol;
     }
-    return 0;
+
+    if (horizontal == nullptr || horizontal->col != xPos) {
+        return 0;
+    }
+    return horizontal->value;
 }
 
 void SparseMatrix::remove(int yPos, int xPos) {
-    nodo* filaActual = head->nxtFil;
-    if (filaActual == nullptr) {
-        std::cout << "La matriz esta vacia." << std::endl;
+   // Encontrar el nodo previo en la fila
+    nodo* vertical = head;
+    while (vertical->nxtFil != nullptr && vertical->nxtFil->fil < yPos) {
+        vertical = vertical->nxtFil;
+    }
+    if (vertical->nxtFil == nullptr || vertical->nxtFil->fil > yPos) {
         return;
     }
+    nodo* prevHorizontal = vertical->nxtFil;
 
-    while (filaActual != nullptr) {
-        nodo* nodoActual = filaActual->nxtCol;
+    // Avanza hasta el nodo *anterior* al que queremos borrar
+    while (prevHorizontal->nxtCol != nullptr && prevHorizontal->nxtCol->col < xPos) {
+        prevHorizontal = prevHorizontal->nxtCol;
+    }
+    if (prevHorizontal->nxtCol == nullptr || prevHorizontal->nxtCol->col > xPos) {
+        return;
+    }
+    
+    nodo* nodoABorrar = prevHorizontal->nxtCol;
 
-        while (nodoActual != nullptr) {
-            if (nodoActual->fil == yPos && nodoActual->col == xPos) {
-                nodoActual->value = 0;
-                std::cout<<"Nodo Reseteado a 0"<<std::endl;
-            }
-            nodoActual = nodoActual->nxtCol;
-        }
-        filaActual = filaActual->nxtFil;
+    // Encontrar el nodo previo en la columna
+    vertical = head;
+    while (vertical->nxtCol != nullptr && vertical->nxtCol->col < xPos) {
+        vertical = vertical->nxtCol;
+    }
+    if (vertical->nxtCol == nullptr || vertical->nxtCol->col > xPos) {
+         return; 
+    }
+    nodo* prevVertical = vertical->nxtCol;
+
+    while (prevVertical->nxtFil != nullptr && prevVertical->nxtFil->fil < yPos) {
+        prevVertical = prevVertical->nxtFil;
     }
 
+    // Desconectar el nodo de ambas listas
+    prevHorizontal->nxtCol = nodoABorrar->nxtCol;
+    prevVertical->nxtFil = nodoABorrar->nxtFil;
+
+    delete nodoABorrar;
+    elementCount--;
 }
 
 void SparseMatrix::printStoredValues() {
@@ -147,32 +196,17 @@ void SparseMatrix::printStoredValues() {
 
 
 int SparseMatrix::density() {
-    double elementCount = 0;
-    nodo* filaActual = head->nxtFil;
-
-    // Contar elementos no nulos
-    while (filaActual != nullptr) {
-        nodo* nodoActual = filaActual->nxtCol;
-        while (nodoActual != nullptr) {
-            elementCount++;
-            nodoActual = nodoActual->nxtCol;
-        }
-        filaActual = filaActual->nxtFil;
-    }
-
     if (elementCount == 0) {
         return 0;
     }
-
-    // Calcular tamaño total usando las variables miembro
-    double totalSize = (double)(filas + 1) * (columnas + 1);
+    double totalSize = (double)filas * columnas;
 
     if (totalSize == 0) {
         return 0;
     }
 
     // Retornar densidad como porcentaje
-    return (int)((elementCount / totalSize) * 100);
+    return (int)(((double)elementCount / totalSize) * 100);
 }
 
 SparseMatrix* SparseMatrix::multiply(SparseMatrix* second) {
