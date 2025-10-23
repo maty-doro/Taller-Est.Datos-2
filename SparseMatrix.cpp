@@ -37,11 +37,11 @@ void SparseMatrix::add(int value, int yPos, int xPos) {
     // Si el nodo ya existe, solo actualizamos el valor
     if (horizontal->nxtCol != nullptr && horizontal->nxtCol->col == xPos) {
         horizontal->nxtCol->value = value;
-        if (xPos > columnas) {
-        columnas = xPos;
+        if (xPos+1 > columnas) {
+        columnas = xPos+1;
         }
-        if (yPos > filas) {
-        filas = yPos;
+        if (yPos+1 > filas) {
+        filas = yPos+1;
         }
         return;
     }
@@ -70,11 +70,11 @@ void SparseMatrix::add(int value, int yPos, int xPos) {
     nuevoNodo->nxtFil = columnaActual->nxtFil;
     columnaActual->nxtFil = nuevoNodo;
     
-    if (xPos > columnas) {
-        columnas = xPos;
+    if (xPos+1 > columnas) {
+        columnas = xPos+1;
     }
-    if (yPos > filas) {
-        filas = yPos;
+    if (yPos+1 > filas) {
+        filas = yPos+1;
     }
 }
 
@@ -123,14 +123,14 @@ void SparseMatrix::remove(int yPos, int xPos) {
 }
 
 void SparseMatrix::printStoredValues() {
-    std::cout << "--- Contenido de la Matriz ---" << std::endl;
+    
     nodo* filaActual = head->nxtFil;
 
     if (filaActual == nullptr) {
         std::cout << "La matriz esta vacia." << std::endl;
         return;
     }
-
+    std::cout << "--- Contenido de la Matriz ---" << std::endl;
     // Recorremos cada fila
     while (filaActual != nullptr) {
         nodo* nodoActual = filaActual->nxtCol; // Empezamos en el primer nodo con valor de la fila.
@@ -176,14 +176,45 @@ int SparseMatrix::density() {
 }
 
 SparseMatrix* SparseMatrix::multiply(SparseMatrix* second) {
-    if (getColumnas() != second->getFilas()){
+    if (getColumnas() != second->getFilas()) {
         std::cout<<"No hay posibilidad de multiplicar las matrices"<<std::endl;
         return nullptr;
     }
-    std::cout<<"doro";
-    return nullptr;
-    //SparseMatrix* MxNueva = new SparseMatrix();
+    SparseMatrix* MxNueva = new SparseMatrix();
+    nodo* filaA = head->nxtFil;
     
+    if(filaA==nullptr) {
+        std::cout << "Matriz está vacia" << std::endl;
+        return nullptr;
+    }
+    //Recorre fila m1
+    while (filaA != nullptr) {
+       nodo* colM2 = second->head->nxtCol;
+       //Columnas m2
+       while(colM2 != nullptr){
+           int suma = 0;
+           nodo* nodoActual = filaA->nxtCol;
+           //Recorre elementos de la fila m1
+           while (nodoActual!=nullptr){
+               nodo* colActual = colM2->nxtFil;
+               //Encuentra la fila de nodoActual
+               while(colActual!= nullptr && colActual->fil<nodoActual->col){
+                   colActual = colActual->nxtFil;
+               }
+               if(colActual!= nullptr && colActual->fil == nodoActual->col){
+                   suma += colActual->value*nodoActual->value;
+               }
+               nodoActual = nodoActual->nxtCol;
+            }
+            if (suma > 0){
+                MxNueva->add(suma,filaA->fil,colM2->col);
+            }
+           colM2 = colM2->nxtCol;
+       }
+       
+       filaA = filaA->nxtFil;
+    }
+    return MxNueva;
 }
 int SparseMatrix::getColumnas(){
     return columnas;
